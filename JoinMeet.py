@@ -5,7 +5,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 import time
 import getpass
-
+from selenium.webdriver.common.alert import Alert
 class JoinMeet:
     def __init__(self, email, password):
         self.email = email
@@ -17,6 +17,7 @@ class JoinMeet:
             "profile.default_content_setting_values.geolocation": 1,
             "profile.default_content_setting_values.notifications": 1
         })
+        opt.add_experimental_option('excludeSwitches',['test-type'])
         s = Service(ChromeDriverManager().install())
         self.driver = webdriver.Chrome(service=s, options=opt)
 
@@ -77,10 +78,16 @@ class JoinMeet:
     def record_meeting(self):
         time.sleep(2)
         self.driver.execute_script(
-            '''window.open("https://meet.google.com/","_blank");''')
+            '''window.open("https://meet.google.com/cxi-egxi-sor","_blank");''')
         self.driver.switch_to.window(self.driver.window_handles[1])
         time.sleep(2)
-        self.driver.find_element_by_xpath(
-            '/html/body/c-wiz/div/div[2]/div/div[1]/div[3]/div/div[1]/div[1]/div/button/span').click()
-        self.driver.find_element_by_xpath(
-            '/html/body/c-wiz/div/div[2]/div/div[1]/div[3]/div/div[1]/div[2]/div/ul/li[2]').click()
+        self.turn_off_mic()
+        self.ask_to_join()
+        self.driver.find_element_by_xpath('/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[5]/div/div[2]/div[1]/span/button/i').click()
+        self.driver.find_element_by_xpath('/html/body/div[3]/ul/li[3]').click()
+        
+if __name__ == "__main__":
+    obj = JoinMeet("email","pass")
+    obj.join_meet("https://meet.google.com/uxp-mgmo-gxc")
+    obj.record_meeting()
+    
