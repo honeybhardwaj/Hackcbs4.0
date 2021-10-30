@@ -39,14 +39,14 @@ def get_meeting_list():
     meeting_list = sorted(meeting_list, key=lambda x: x['class_time'])
     return meeting_list
 
+MEETINGS = []
 
 def start_recording(meeting):
     print("Starting recording")
     email = ""
     password = ""
-    global join_meet
-    join_meet = JoinMeet(email, password)
-    join_meet.join_meet(meeting.class_link)
+    MEETINGS.append(JoinMeet(email, password))
+    MEETINGS[-1].join_meet(meeting.class_link)
     # join_meet.record_meeting()
 
 def checker():
