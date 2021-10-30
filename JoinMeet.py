@@ -113,7 +113,7 @@ class JoinMeet:
         
 
 if __name__ == "__main__":
-    obj = JoinMeet("honey.bhardwaj.18cse@bmu.edu.in","8851358664")
+    obj = JoinMeet("email","pass")
     obj.join_meet("https://meet.google.com/uxp-mgmo-gxc")
     obj.record_meeting()
     
