@@ -4,7 +4,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 import time
-  
+from selenium.webdriver.common.keys import Keys  
   
 def Glogin(mail_address, password):
     # Login Page
@@ -51,8 +51,8 @@ def AskToJoin():
     #print("no. of attendees are :",attendees.get_attribute("innerHTML"))
   
 # assign email id and password
-mail_address = input("enter mail id:")
-password = input("enter password:")
+#mail_address = input("enter mail id:")
+#password = input("enter password:")
   
  # create chrome instamce
 opt = Options()
@@ -76,4 +76,12 @@ turnOffMicCam()
 attendees1 = driver.find_element_by_xpath('/html/body/div[1]/c-wiz/div/div/div[9]/div[3]/div/div/div[3]/div/div/div[2]/div/div[1]/div[1]/div[2]/div[2]')
 print(attendees1.text)
 AskToJoin()
-driver.close()
+
+# create new tab and open a new meet
+time.sleep(2)
+driver.execute_script('''window.open("https://meet.google.com/","_blank");''')
+driver.switch_to.window(driver.window_handles[1])
+time.sleep(2)
+driver.find_element_by_xpath('/html/body/c-wiz/div/div[2]/div/div[1]/div[3]/div/div[1]/div[1]/div/button/span').click()
+driver.find_element_by_xpath('/html/body/c-wiz/div/div[2]/div/div[1]/div[3]/div/div[1]/div[2]/div/ul/li[2]').click()
+
