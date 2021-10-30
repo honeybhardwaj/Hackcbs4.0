@@ -80,6 +80,7 @@ class JoinMeet:
 
     def record_meeting(self):
         time.sleep(2)
+        self.driver.maximize_window()
         self.driver.execute_script(
             '''window.open("https://meet.google.com/cxi-egxi-sor","_blank");''')
         self.driver.switch_to.window(self.driver.window_handles[1])
@@ -101,9 +102,18 @@ class JoinMeet:
 
         keyboard.press(Key.enter)
         keyboard.release(Key.enter)
+
+        self.driver.find_element_by_xpath('/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[6]/div/div[3]/div[1]/span/button/i').click()
+        time.sleep(2)
+        self.driver.find_element_by_xpath('/html/body/div[4]/ul/li[2]/span[3]').click()
+        time.sleep(2)
+        self.driver.find_element_by_xpath('/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[4]/div[2]/div[3]/div/div[2]/div/div/p/div/div/button').click()
+        time.sleep(2)
+        self.driver.find_element_by_xpath('/html/body/div[1]/div[3]/div/div[2]/div[3]/div/div[2]/span/span').click()
         
+
 if __name__ == "__main__":
-    obj = JoinMeet("","")
+    obj = JoinMeet("honey.bhardwaj.18cse@bmu.edu.in","8851358664")
     obj.join_meet("https://meet.google.com/uxp-mgmo-gxc")
     obj.record_meeting()
     
