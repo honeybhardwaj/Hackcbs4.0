@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask_apscheduler import APScheduler
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from JoinMeet import JoinMeet
 import time
 
 
@@ -40,14 +41,15 @@ def get_meeting_list():
 
 
 def start_recording(meeting):
-    # meeting.class_name
-    # meeting.class_time
-    # meeting.class_link
-    print(
-        f"Starting the recording of {meeting.class_name} at {meeting.class_time}")
-
+    print("Starting recording")
+    email = "email"
+    password = ""
+    join_meet = JoinMeet(email, password)
+    join_meet.join_meet(meeting.class_link)
+    # join_meet.record_meeting()
 
 def checker():
+    # print("Checking Right Now")
     for meeting in Meeting.query.all():
         if datetime.now() > meeting.class_time and not meeting.started:
             start_recording(meeting)
@@ -88,4 +90,4 @@ if __name__ == "__main__":
     scheduler.add_job(id="check_time", func=checker,
                       trigger="interval", seconds=5)
     scheduler.start()
-    app.run(debug=True, port=5006)
+    app.run(debug=True, port=5008)
