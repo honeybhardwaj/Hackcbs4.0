@@ -9,7 +9,7 @@ import time
 import getpass
 from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.common.by import By
-
+from SendMessage import SendMessage
 
 
 class JoinMeet:
@@ -27,8 +27,10 @@ class JoinMeet:
         opt.add_experimental_option('excludeSwitches', ['test-type'])
         s = Service(ChromeDriverManager().install())
         self.driver = webdriver.Chrome(service=s, options=opt)
+        self.messages = SendMessage()
 
     def google_login(self):
+        # self.messages.send_message("Initating the process.")
         print("Logging into gmail id")
         self.driver.get(
             'https://accounts.google.com/ServiceLogin?hl=en&passive=true&continue=https://www.google.com/&ec=GAZAAQ')
@@ -78,6 +80,7 @@ class JoinMeet:
 
     def join_meet(self, meeting_link, class_id):
         self.class_id = class_id
+        self.messages.send_message(f"Hi, I would like to inform you that your meeting scheduled right now on the link {meeting_link}, has been joined.")
         print(f"Joining the meet link: {meeting_link}")
         # login to google account
         self.google_login()
@@ -127,6 +130,7 @@ class JoinMeet:
         time.sleep(2)
         self.driver.find_element(By.XPATH,
             '/html/body/div[1]/div[3]/div/div[2]/div[3]/div/div[2]/span/span').click()
+        self.messages.send_message("Hi, I would like to inform you that the recording has been started.")
         self.leave_meeting()
 
     def leave_meeting(self, wait_for=10, members=3):
@@ -143,11 +147,13 @@ class JoinMeet:
             attendees = int(attendees.get_attribute("innerHTML"))
             if attendees < members:
                 print("Leaving the meeting.")
+                self.messages.send_message("Hi, I would like to inform you that I am leaving the meeting since the number of attendees are less than the threshold.")
                 self.driver.find_element(By.XPATH,
                     "/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[7]/span/button/i").click()
                 time.sleep(2)
                 self.driver.switch_to.window(self.driver.window_handles[1])
                 print("Stopping the recording")
+                self.messages.send_message("Hi, I would like to inform you that the recording has been stopped.")
                 self.driver.find_element(By.XPATH,
                     '/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[6]/div/div[3]/div[1]/span/button/i').click()
                 time.sleep(2)
@@ -165,13 +171,7 @@ class JoinMeet:
                     self.driver.switch_to.window(handle)
                     self.driver.close()
                 from app import Meeting, db
-                meet = Meeting.query.filter_by(id=self.class_id)
+                meet = Meeting.query.filter_by(id=self.class_id).first()
                 meet.finished = True 
                 db.session.commit()
                 break
-
-
-if __name__ == "__main__":
-    obj = JoinMeet("", "")
-    obj.join_meet("https://meet.google.com/uxp-mgmo-gxc")
-    obj.record_meeting()
