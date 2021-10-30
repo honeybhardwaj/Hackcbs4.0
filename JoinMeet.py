@@ -84,4 +84,3 @@ class JoinMeet:
             '/html/body/c-wiz/div/div[2]/div/div[1]/div[3]/div/div[1]/div[1]/div/button/span').click()
         self.driver.find_element_by_xpath(
             '/html/body/c-wiz/div/div[2]/div/div[1]/div[3]/div/div[1]/div[2]/div/ul/li[2]').click()
-
