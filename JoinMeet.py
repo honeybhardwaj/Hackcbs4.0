@@ -8,23 +8,28 @@ from pynput.keyboard import Key, Controller
 import time
 import getpass
 from selenium.webdriver.common.alert import Alert
+from selenium.webdriver.common.by import By
+
+
+
 class JoinMeet:
     def __init__(self, email, password):
         self.email = email
         self.password = password
         opt = Options()
-        opt.add_argument("--start-maximized")
+        # opt.add_argument("--start-maximized")
         opt.add_experimental_option("prefs", {
             "profile.default_content_setting_values.media_stream_mic": 1,
             "profile.default_content_setting_values.media_stream_camera": 1,
             "profile.default_content_setting_values.geolocation": 1,
             "profile.default_content_setting_values.notifications": 1
         })
-        opt.add_experimental_option('excludeSwitches',['test-type'])
+        opt.add_experimental_option('excludeSwitches', ['test-type'])
         s = Service(ChromeDriverManager().install())
         self.driver = webdriver.Chrome(service=s, options=opt)
 
     def google_login(self):
+        print("Logging into gmail id")
         self.driver.get(
             'https://accounts.google.com/ServiceLogin?hl=en&passive=true&continue=https://www.google.com/&ec=GAZAAQ')
 
@@ -34,7 +39,7 @@ class JoinMeet:
         self.driver.implicitly_wait(10)
 
         # input Password
-        self.driver.find_element_by_xpath(
+        self.driver.find_element(By.XPATH,
             '//*[@id="password"]/div[1]/div/div[1]/input').send_keys(self.password)
         self.driver.implicitly_wait(10)
         self.driver.find_element_by_id("passwordNext").click()
@@ -43,21 +48,26 @@ class JoinMeet:
         # go to google home page
         self.driver.get('https://google.com/')
         self.driver.implicitly_wait(100)
+        time.sleep(2)
 
     def turn_off_mic(self):
+        print("Turning the mic off")
         time.sleep(2)
         # turn off mic
-        self.driver.find_element_by_xpath(
+        self.driver.find_element(By.XPATH,
             '/html/body/div/c-wiz/div/div/div[9]/div[3]/div/div/div[3]/div/div/div[1]/div[1]/div/div[4]/div[1]/div/div/div').click()
         self.driver.implicitly_wait(3000)
 
         # turn off camera
         time.sleep(2)
-        self.driver.find_element_by_xpath(
+        print("Turning the camera off")
+        self.driver.find_element(By.XPATH,
             '/html/body/div/c-wiz/div/div/div[9]/div[3]/div/div/div[3]/div/div/div[1]/div[1]/div/div[4]/div[2]/div/div').click()
         self.driver.implicitly_wait(3000)
 
     def ask_to_join(self):
+        self.driver.maximize_window()
+        print("Asking to join")
         # Ask to Join meet
         time.sleep(5)
         self.driver.implicitly_wait(2000)
@@ -65,30 +75,31 @@ class JoinMeet:
             'div.uArJ5e.UQuaGc.Y5sE8d.uyXBBb.xKiqt').click()
         # Ask to join and join now buttons have same xpaths
         # time.sleep(5)
-        #attendees = driver.find_element_by_css_selector('div.uGOf1d')
-        #print("no. of attendees are :",attendees.get_attribute("innerHTML"))
 
     def join_meet(self, meeting_link):
+        print(f"Joining the meet link: {meeting_link}")
         # login to google account
         self.google_login()
         self.driver.get(meeting_link)
         self.turn_off_mic()
-        attendees = self.driver.find_element_by_xpath(
+        attendees = self.driver.find_element(By.XPATH,
             '/html/body/div[1]/c-wiz/div/div/div[9]/div[3]/div/div/div[3]/div/div/div[2]/div/div[1]/div[1]/div[2]/div[2]')
         print(attendees.text)
         self.ask_to_join()
 
     def record_meeting(self):
+        print("Starting recording")
         time.sleep(2)
         self.driver.maximize_window()
         self.driver.execute_script(
-            '''window.open("https://meet.google.com/cxi-egxi-sor","_blank");''')
+            '''window.open("https://meet.google.com/mwx-wbnz-bnp","_blank");''')
         self.driver.switch_to.window(self.driver.window_handles[1])
         time.sleep(2)
         self.turn_off_mic()
         self.ask_to_join()
-        self.driver.find_element_by_xpath('/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[5]/div/div[2]/div[1]/span/button/i').click()
-        self.driver.find_element_by_xpath('/html/body/div[3]/ul/li[3]').click()
+        self.driver.find_element(By.XPATH,
+            '/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[5]/div/div[2]/div[1]/span/button/i').click()
+        self.driver.find_element(By.XPATH,'/html/body/div[3]/ul/li[3]').click()
         time.sleep(2)
         keyboard = Controller()
         keyboard.press(Key.tab)
@@ -103,17 +114,59 @@ class JoinMeet:
         keyboard.press(Key.enter)
         keyboard.release(Key.enter)
 
-        self.driver.find_element_by_xpath('/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[6]/div/div[3]/div[1]/span/button/i').click()
+        time.sleep(5)
+        self.driver.find_element(By.XPATH,
+            '/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[6]/div/div[3]/div[1]/span/button/i').click()
         time.sleep(2)
-        self.driver.find_element_by_xpath('/html/body/div[4]/ul/li[2]/span[3]').click()
+        self.driver.find_element(By.XPATH,
+            '/html/body/div[4]/ul/li[2]/span[3]').click()
         time.sleep(2)
-        self.driver.find_element_by_xpath('/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[4]/div[2]/div[3]/div/div[2]/div/div/p/div/div/button').click()
+        self.driver.find_element(By.XPATH,
+            '/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[4]/div[2]/div[3]/div/div[2]/div/div/p/div/div/button').click()
         time.sleep(2)
-        self.driver.find_element_by_xpath('/html/body/div[1]/div[3]/div/div[2]/div[3]/div/div[2]/span/span').click()
-        
+        self.driver.find_element(By.XPATH,
+            '/html/body/div[1]/div[3]/div/div[2]/div[3]/div/div[2]/span/span').click()
+        self.leave_meeting()
+
+    def leave_meeting(self, wait_for=10, members=3):
+        '''
+        wait_for is the number of seconds it checks the number of participants, and then if memebers are less than 'members' then it leaves
+        '''
+        self.driver.switch_to.window(self.driver.window_handles[0])
+        print("In leave meeting function")
+        while True:
+            time.sleep(wait_for)
+            # chek members
+            attendees = self.driver.find_element_by_css_selector('div.uGOf1d')
+            print("Number of attendees are :", attendees.get_attribute("innerHTML"))
+            attendees = int(attendees.get_attribute("innerHTML"))
+            if attendees < members:
+                print("Leaving the meeting.")
+                self.driver.find_element(By.XPATH,
+                    "/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[7]/span/button/i").click()
+                time.sleep(2)
+                self.driver.switch_to.window(self.driver.window_handles[1])
+                print("Stopping the recording")
+                self.driver.find_element(By.XPATH,
+                    '/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[6]/div/div[3]/div[1]/span/button/i').click()
+                time.sleep(2)
+                self.driver.find_element(By.XPATH,
+                    '/html/body/div[4]/ul/li[2]/span[3]').click()
+                time.sleep(2)
+                self.driver.find_element(By.XPATH,
+                    '/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[4]/div[2]/div[3]/div/div[2]/div/div/p/div/div/button').click()
+                time.sleep(2)
+                self.driver.find_element(By.XPATH,
+                    '/html/body/div[1]/div[3]/div/div[2]/div[3]/div/div[2]/span/span').click()
+                self.driver.find_element(By.XPATH,
+                    "/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[7]/span/button/i").click()
+                for handle in self.driver.window_handles:
+                    self.driver.switch_to.window(handle)
+                    self.driver.close()
+                break
+
 
 if __name__ == "__main__":
-    obj = JoinMeet("email","pass")
+    obj = JoinMeet("", "")
     obj.join_meet("https://meet.google.com/uxp-mgmo-gxc")
     obj.record_meeting()
-    

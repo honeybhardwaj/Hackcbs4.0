@@ -47,7 +47,7 @@ def start_recording(meeting):
     password = ""
     MEETINGS.append(JoinMeet(email, password))
     MEETINGS[-1].join_meet(meeting.class_link)
-    # join_meet.record_meeting()
+    MEETINGS[-1].record_meeting()
 
 def checker():
     # print("Checking Right Now")
