@@ -1,8 +1,10 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
+from pynput.keyboard import Key, Controller
 import time
 import getpass
 from selenium.webdriver.common.alert import Alert
@@ -11,6 +13,7 @@ class JoinMeet:
         self.email = email
         self.password = password
         opt = Options()
+        opt.add_argument("--start-maximized")
         opt.add_experimental_option("prefs", {
             "profile.default_content_setting_values.media_stream_mic": 1,
             "profile.default_content_setting_values.media_stream_camera": 1,
@@ -85,9 +88,22 @@ class JoinMeet:
         self.ask_to_join()
         self.driver.find_element_by_xpath('/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[5]/div/div[2]/div[1]/span/button/i').click()
         self.driver.find_element_by_xpath('/html/body/div[3]/ul/li[3]').click()
+        time.sleep(2)
+        keyboard = Controller()
+        keyboard.press(Key.tab)
+        keyboard.release(Key.tab)
+
+        keyboard.press(Key.down)
+        keyboard.release(Key.down)
+
+        keyboard.press(Key.down)
+        keyboard.release(Key.down)
+
+        keyboard.press(Key.enter)
+        keyboard.release(Key.enter)
         
 if __name__ == "__main__":
-    obj = JoinMeet("email","pass")
+    obj = JoinMeet("","")
     obj.join_meet("https://meet.google.com/uxp-mgmo-gxc")
     obj.record_meeting()
     
