@@ -76,7 +76,8 @@ class JoinMeet:
         # Ask to join and join now buttons have same xpaths
         # time.sleep(5)
 
-    def join_meet(self, meeting_link):
+    def join_meet(self, meeting_link, class_id):
+        self.class_id = class_id
         print(f"Joining the meet link: {meeting_link}")
         # login to google account
         self.google_login()
@@ -163,6 +164,10 @@ class JoinMeet:
                 for handle in self.driver.window_handles:
                     self.driver.switch_to.window(handle)
                     self.driver.close()
+                from app import Meeting, db
+                meet = Meeting.query.filter_by(id=self.class_id)
+                meet.finished = True 
+                db.session.commit()
                 break
 
 
