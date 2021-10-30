@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask_apscheduler import APScheduler
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import time 
+import time
 import threading
 
 
@@ -13,6 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 scheduler = APScheduler()
 
 db = SQLAlchemy(app)
+
 
 class Meeting(db.Model):
     class_name = db.Column(db.String(50))
@@ -40,18 +41,20 @@ def get_meeting_list():
 
 
 def start_recording(meeting):
-    # meeting.class_name 
+    # meeting.class_name
     # meeting.class_time
     # meeting.class_link
-    print(f"Starting the recording of {meeting.class_name} at {meeting.class_time}")
+    print(
+        f"Starting the recording of {meeting.class_name} at {meeting.class_time}")
 
 
 def checker():
     for meeting in Meeting.query.all():
         if datetime.now() > meeting.class_time and not meeting.started:
             start_recording(meeting)
-            meeting.started = True 
+            meeting.started = True
             db.session.commit()
+
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -64,7 +67,8 @@ def add_meeting():
     class_link = request.form.get('class_link')
     class_time = request.form.get('class_time')
     class_time = datetime.strptime(class_time, "%Y-%m-%dT%H:%M")
-    meeting = Meeting(class_name=class_name, class_link=class_link, class_time=class_time)
+    meeting = Meeting(class_name=class_name,
+                      class_link=class_link, class_time=class_time)
     db.session.add(meeting)
     db.session.commit()
     return redirect(url_for('home'))
@@ -79,9 +83,10 @@ def delete_meeting():
     db.session.commit()
     return redirect(url_for("home"))
 
+
 if __name__ == "__main__":
     db.create_all()
-    scheduler.add_job(id="check_time", func=checker, trigger="interval", seconds=5)
+    scheduler.add_job(id="check_time", func=checker,
+                      trigger="interval", seconds=5)
     scheduler.start()
     app.run(debug=True, port=5001)
-    
