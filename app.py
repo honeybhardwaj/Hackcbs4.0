@@ -3,7 +3,6 @@ from flask_apscheduler import APScheduler
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import time
-import threading
 
 
 app = Flask(__name__)
@@ -89,4 +88,4 @@ if __name__ == "__main__":
     scheduler.add_job(id="check_time", func=checker,
                       trigger="interval", seconds=5)
     scheduler.start()
-    app.run(debug=True, port=5001)
+    app.run(debug=True, port=5006)
