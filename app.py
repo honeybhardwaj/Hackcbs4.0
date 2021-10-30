@@ -42,8 +42,9 @@ def get_meeting_list():
 
 def start_recording(meeting):
     print("Starting recording")
-    email = "email"
+    email = ""
     password = ""
+    global join_meet
     join_meet = JoinMeet(email, password)
     join_meet.join_meet(meeting.class_link)
     # join_meet.record_meeting()
@@ -90,4 +91,4 @@ if __name__ == "__main__":
     scheduler.add_job(id="check_time", func=checker,
                       trigger="interval", seconds=5)
     scheduler.start()
-    app.run(debug=True, port=5008)
+    app.run(debug=True, port=5010, use_reloader=False)
