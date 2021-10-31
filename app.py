@@ -5,6 +5,7 @@ from datetime import datetime
 from JoinMeet import JoinMeet
 from threading import Thread
 from SendMessage import SendMessage
+from autotrans import download
 import time
 import os
 
@@ -26,6 +27,7 @@ class Meeting(db.Model):
     class_name = db.Column(db.String(50))
     class_link = db.Column(db.String(50))
     class_time = db.Column(db.DateTime)
+    recording_time = db.Column(db.DateTime)
     started = db.Column(db.Boolean, default=False)
     finished = db.Column(db.Boolean, default=False)
 
@@ -36,7 +38,7 @@ class User(db.Model):
 
 
 class TranscribedVideo(db.Model):
-    name = db.Column(db.String(100), primary_key=True)
+    name = db.Column(db.String(100))
     file_name = db.Column(db.String(100), primary_key=True)
 
 
@@ -81,7 +83,20 @@ def checker():
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    return render_template("index.html", meeting_list=get_meeting_list(), finished_meetings=get_meeting_list(True))
+    videos = TranscribedVideo.query.all()
+    video_list = []
+    for video in videos:
+        data = ""
+        with open(video.file_name.replace("mp4", "txt")) as f:
+            data = f.read()
+        video_list.append(
+            {
+                'video_name': video.name,
+                'video_file_name': video.file_name.replace("mp4", "txt"),
+                'video_file_text': data
+            }
+        )
+    return render_template("index.html", meeting_list=get_meeting_list(), finished_meetings=get_meeting_list(True), video_list=video_list, PROCESSING=PROCESSING)
 
 
 @app.route('/add_meeting', methods=['POST'])
@@ -107,27 +122,6 @@ def delete_meeting():
     return redirect(url_for("home"))
 
 
-@app.route('/transcribe')
-def transcribe():
-
-    videos = TranscribedVideo.query.all()
-
-    video_list = []
-    for video in videos:
-        data = ""
-        with open(video.file_name.replace("mp4", "txt")) as f:
-            data = f.read()
-        video_list.append(
-            {
-                'video_name': video.name,
-                'video_file_name': video.file_name,
-                'video_file_text': data
-            }
-        )
-
-    return render_template("transcribe.html", video_list=video_list, PROCESSING=PROCESSING)
-
-
 @app.route('/transcribe_video', methods=["POST"])
 def transcribe_video():
     def process_video(name, video_file_name):
@@ -146,21 +140,38 @@ def transcribe_video():
         PROCESSING.pop()
         os.remove(video_file_name)
         return
-    name = request.form.get('name')
-    file = request.files['file']
-    file.save(file.filename)
+
+    meeting_id = request.form.get('meeting_id')
+    meet = Meeting.query.filter_by(id=meeting_id).first()
+    name = meet.class_name
+    recording_time = meet.recording_time
+    user = User.query.first()
+    obj = download(user.email, user.password, meet.recording_time.strftime(
+        "%H:%M"), "mwx-wbnz-bnp", meet.recording_time.strftime("%Y-%m-%d"))
+    obj.google_login()
+    obj.downloadfile()
+    filename = meet.recording_time.strftime(
+        "mwx-wbnz-bnp (%Y-%m-%d at %H_%M GMT-7).mp4")
+    db.session.delete(meet)
+    db.session.commit()
     thread = Thread(target=process_video, kwargs={
-                    'video_file_name': file.filename, 'name': name})
+                    'video_file_name': filename, 'name': name})
     thread.start()
-    return redirect(url_for('transcribe'))
+    return redirect(url_for('home'))
+
+
+@app.route('/view_file/<filename>')
+def view_file(filename):
+    with open(filename) as f:
+        return f.read()
 
 
 if __name__ == "__main__":
     from StoreCred import store_password
     store_password()
     db.create_all()
-    # scheduler.add_job(id="check_time", func=checker,
-    #                   trigger="interval", seconds=5)
-    # scheduler.start()
-    port = 5045+1+1+1+1
-    app.run(debug=True, port=port, use_reloader=True)
+    scheduler.add_job(id="check_time", func=checker,
+                      trigger="interval", seconds=5)
+    scheduler.start()
+    port = 5090
+    app.run(debug=True, port=port, use_reloader=False)

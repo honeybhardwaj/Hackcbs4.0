@@ -1,6 +1,7 @@
 from app import User, db
 import getpass
 
+
 def store_password():
     # Check if there's already a user
     if len(User.query.all()) == 0:
@@ -9,5 +10,6 @@ def store_password():
         user = User(email=email, password=password)
         db.session.add(user)
         db.session.commit()
+
 
 db.create_all()

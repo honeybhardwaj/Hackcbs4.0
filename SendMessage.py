@@ -10,7 +10,8 @@ class SendMessage:
 
     def send_message(self, message):
         print(f"Sending message {message}")
-        message = self.client.messages.create(to=self.to, from_=self.from_, body=message)
+        message = self.client.messages.create(
+            to=self.to, from_=self.from_, body=message)
 
 
 if __name__ == "__main__":
