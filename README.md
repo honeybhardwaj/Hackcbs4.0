@@ -1,5 +1,3 @@
-![[object Object]](https://socialify.git.ci/honeybhardwaj/Hackcbs4.0/image?description=1&forks=1&language=1&name=1&owner=1&pattern=Brick%20Wall&stargazers=1&theme=Dark)
-
 # Problem Statement
 During the Covid Era, Everything have converted into online Due to which We have alott of meetings to attend and some of the meeting we even can't miss Even when we are busy somewhere else.Also we can't just miss the meetings just like that it might have something important to hear out.
 
