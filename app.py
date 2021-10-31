@@ -19,6 +19,7 @@ scheduler = APScheduler()
 db = SQLAlchemy(app)
 PROCESSING = []
 
+
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     class_name = db.Column(db.String(50))
@@ -130,7 +131,8 @@ def transcribe():
 def transcribe_video():
     def process_video(name, video_file_name):
         PROCESSING.append(video_file_name)
-        messages.send_message("The processing for your video has been started.")
+        messages.send_message(
+            "The processing for your video has been started.")
         print("Starting processing! ")
         from Transcribe import Transcribe
         transcribed_text = Transcribe(video_file_name)
@@ -145,7 +147,8 @@ def transcribe_video():
     name = request.form.get('name')
     file = request.files['file']
     file.save(file.filename)
-    thread = Thread(target=process_video, kwargs={'video_file_name': file.filename, 'name': name})
+    thread = Thread(target=process_video, kwargs={
+                    'video_file_name': file.filename, 'name': name})
     thread.start()
     return redirect(url_for('transcribe'))
 
