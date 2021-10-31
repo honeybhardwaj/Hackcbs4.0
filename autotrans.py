@@ -22,8 +22,12 @@ class download:
             "profile.default_content_setting_values.notifications": 1
         })
         opt.add_experimental_option('excludeSwitches', ['test-type'])
-        s = Service(ChromeDriverManager().install())
-        self.driver = webdriver.Chrome(service=s, options=opt)
+        try:
+            s = Service(ChromeDriverManager().install())
+            self.driver = webdriver.Chrome(service=s, options=opt)
+        except:
+            s = Service(ChromeDriverManager().install())
+            self.driver = webdriver.Chrome(service=s, options=opt)
 
     def google_login(self):
         # self.messages.send_message("Initating the process.")
