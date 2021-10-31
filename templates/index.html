@@ -24,6 +24,7 @@
                 <!-- <button type="submit" formaction="#"><i class="fas fa-plus"></i></button> -->
             </div>
         </form>
+        {% if meeting_list %}
         <div class="footer">
             <span>Pending Meetings <span class="pendingTasks"></span></span>
         </div>
@@ -44,7 +45,7 @@
             </li>
             {% endfor %}
         </ul>
-        {% if finished_meetings %}
+        {% endif %} {% if finished_meetings %}
         <div class="footer">
             <span>Completed Meetings <span class="pendingTasks"></span></span>
         </div>
