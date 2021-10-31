@@ -3,7 +3,12 @@ from flask_apscheduler import APScheduler
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from JoinMeet import JoinMeet
+from threading import Thread
 import time
+from SendMessage import SendMessage
+
+messages = SendMessage()
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "A super long secret key no one is supposed to know"
@@ -12,7 +17,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 scheduler = APScheduler()
 
 db = SQLAlchemy(app)
-
+PROCESSING = []
 
 class Meeting(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -26,6 +31,11 @@ class Meeting(db.Model):
 class User(db.Model):
     email = db.Column(db.String(50), primary_key=True)
     password = db.Column(db.String(50))
+
+
+class TranscribedVideo(db.Model):
+    name = db.Column(db.String(100), primary_key=True)
+    file_name = db.Column(db.String(100), primary_key=True)
 
 
 def get_meeting_list(finished=False):
@@ -46,7 +56,9 @@ def get_meeting_list(finished=False):
     meeting_list = sorted(meeting_list, key=lambda x: x['class_time'])
     return meeting_list
 
+
 MEETINGS = []
+
 
 def start_recording(meeting):
     print("Starting recording")
@@ -54,6 +66,7 @@ def start_recording(meeting):
     MEETINGS.append(JoinMeet(user.email, user.password))
     MEETINGS[-1].join_meet(meeting.class_link, meeting.id)
     MEETINGS[-1].record_meeting()
+
 
 def checker():
     # print("Checking Right Now")
@@ -92,11 +105,56 @@ def delete_meeting():
     return redirect(url_for("home"))
 
 
+@app.route('/transcribe')
+def transcribe():
+
+    videos = TranscribedVideo.query.all()
+
+    video_list = []
+    for video in videos:
+        data = ""
+        with open(video.file_name.replace("mp4", "txt")) as f:
+            data = f.read()
+        video_list.append(
+            {
+                'video_name': video.name,
+                'video_file_name': video.file_name,
+                'video_file_text': data
+            }
+        )
+
+    return render_template("transcribe.html", video_list=video_list, PROCESSING=PROCESSING)
+
+
+@app.route('/transcribe_video', methods=["POST"])
+def transcribe_video():
+    def process_video(name, video_file_name):
+        PROCESSING.append(video_file_name)
+        messages.send_message("The processing for your video has been started.")
+        print("Starting processing! ")
+        from Transcribe import Transcribe
+        transcribed_text = Transcribe(video_file_name)
+        with open(video_file_name.replace("mp4", "txt"), "w+") as f:
+            f.write(transcribed_text)
+        video = TranscribedVideo(name=name, file_name=video_file_name)
+        db.session.add(video)
+        db.session.commit()
+        messages.send_message("Your video has succesfully been processed.")
+        PROCESSING.pop()
+        return
+    name = request.form.get('name')
+    file = request.files['file']
+    file.save(file.filename)
+    thread = Thread(target=process_video, kwargs={'video_file_name': file.filename, 'name': name})
+    thread.start()
+    return redirect(url_for('transcribe'))
+
+
 if __name__ == "__main__":
     from StoreCred import store_password
     store_password()
     db.create_all()
-    scheduler.add_job(id="check_time", func=checker,
-                      trigger="interval", seconds=5)
-    scheduler.start()
-    app.run(debug=True, port=5028, use_reloader=False)
+    # scheduler.add_job(id="check_time", func=checker,
+    #                   trigger="interval", seconds=5)
+    # scheduler.start()
+    app.run(debug=True, port=5041, use_reloader=True)
