@@ -49,8 +49,10 @@ def get_large_audio_transcription(path):
                 text = f"{text.capitalize()}. "
                 print(" -- :", text)
                 whole_text += text
-                
+    import shutil
+    shutil.rmtree(folder_name)
     # return the text for all chunks detected
+    os.remove(path)
     return whole_text
 
 

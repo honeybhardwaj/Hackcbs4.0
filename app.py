@@ -4,8 +4,9 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from JoinMeet import JoinMeet
 from threading import Thread
-import time
 from SendMessage import SendMessage
+import time
+import os
 
 messages = SendMessage()
 
@@ -143,6 +144,7 @@ def transcribe_video():
         db.session.commit()
         messages.send_message("Your video has succesfully been processed.")
         PROCESSING.pop()
+        os.remove(video_file_name)
         return
     name = request.form.get('name')
     file = request.files['file']
@@ -160,4 +162,5 @@ if __name__ == "__main__":
     # scheduler.add_job(id="check_time", func=checker,
     #                   trigger="interval", seconds=5)
     # scheduler.start()
-    app.run(debug=True, port=5041, use_reloader=True)
+    port = 5045
+    app.run(debug=True, port=port, use_reloader=True)
