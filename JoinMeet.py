@@ -132,7 +132,12 @@ class JoinMeet:
         time.sleep(2)
         self.driver.find_element(By.XPATH,
             '/html/body/div[1]/div[3]/div/div[2]/div[3]/div/div[2]/span/span').click()
-        self.messages.send_message("Hi, I would like to inform you that the recording has been started.")
+        from app import Meeting, db
+        from datetime import timedelta, datetime
+        meet = Meeting.query.filter_by(id=self.class_id).first()
+        meet.recording_time = datetime.now() - timedelta(hours=12, minutes=30)
+        db.session.commit()
+        self.messages.send_message(f"Hi, I would like to inform you that the recording has been started. {str(meet.recording_time)}")
         self.leave_meeting()
 
     def leave_meeting(self, wait_for=10, members=3):

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo App Javscript</title>
+    <title>Project Scion</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
 </head>
@@ -53,7 +53,7 @@
         <ul class="todoList">
             {% for meeting in finished_meetings %}
             <li>
-                {% if meeting['started'] %} Currently going on: {% endif %} {{meeting['class_name']}}
+                {{meeting['class_name']}}
                 <br> {{meeting['class_time']}}
                 <span>
                     <form action="{{url_for('delete_meeting')}}" method="POST">
@@ -62,7 +62,35 @@
                             <i class="fas fa-trash"></i>
                         </button>
                     </form>
+                    <form action="/transcribe_video" method="POST">
+                        Transcribe Video
+                        <input type="text" name="meeting_id" value="{{meeting['id']}}" hidden>
+                        <button type="submit">
+                            <i class="fas fa-file-alt"></i>
+                        </button>
+                    </form>
                 </span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %} {% if PROCESSING %}
+        <h4>Your latest video is currently processing, please come back after some time, when it's done</h4>
+        {% else %}
+        <!-- <h2>Transcribe a new video</h2>
+        <form action="/transcribe_video" method="POST" enctype="multipart/form-data">
+            <input type="text" name="name" required/>
+            <input type="file" name="file" accept=".mp4" />
+            <input type="submit" value="Upload">
+        </form> -->
+        {% endif %} {% if video_list %}
+        <div class="footer">
+            <span>Transcribed Meetings <span class="pendingTasks"></span></span>
+        </div>
+        <ul class="todoList">
+            {% for video in video_list %}
+            <li>
+                {{video['video_name']}}<br>
+                <a href="/view_file/{{video['video_file_name']}}" target="_blank">View File</a>
             </li>
             {% endfor %}
         </ul>
