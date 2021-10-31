@@ -1,13 +1,10 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from pynput.keyboard import Key, Controller
 import time
-import getpass
-from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.common.by import By
 from SendMessage import SendMessage
 
