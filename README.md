@@ -27,5 +27,4 @@ The following are the tech used in the project:
 - Twilio
 
 # Presentation and Demo
-The presentation of the following Project can be seen [HERE](https://www.canva.com/design/DAEuWrBpIEk/zUoKivzICzIbJBXeKC2dKQ/view?utm_content=DAEuWrBpIEk&utm_campaign=designshare&utm_medium=link&utm_source=sharebutton)
-<br>The Demo video of the following project can be seen [HERE](https://drive.google.com/file/d/1GzT7kq1HrtAMoG9JNMCtjUeHePWRO5Ch/view?usp=sharing)
+The Demo video of the following project can be seen [HERE](https://drive.google.com/file/d/1GzT7kq1HrtAMoG9JNMCtjUeHePWRO5Ch/view?usp=sharing)
