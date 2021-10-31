@@ -159,8 +159,8 @@ if __name__ == "__main__":
     from StoreCred import store_password
     store_password()
     db.create_all()
-    scheduler.add_job(id="check_time", func=checker,
-                      trigger="interval", seconds=5)
-    scheduler.start()
-    port = 5045+1
-    app.run(debug=True, port=port, use_reloader=False)
+    # scheduler.add_job(id="check_time", func=checker,
+    #                   trigger="interval", seconds=5)
+    # scheduler.start()
+    port = 5045+1+1
+    app.run(debug=True, port=port, use_reloader=True)

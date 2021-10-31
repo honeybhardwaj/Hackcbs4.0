@@ -1,46 +1,75 @@
-<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Website</title>
+    <title>Todo App Javscript</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}">
 </head>
 
 <body>
-    {% if meeting_list %}
-    <ul>
-        {% for meeting in meeting_list %}
-        <li>
-            {% if meeting['started'] %} Currently going on: {% endif %} {{meeting['id']}}: {{meeting['class_name']}}, {{meeting['class_link']}}, {{meeting['class_time']}}
-            <form action="{{url_for('delete_meeting')}}" method="POST">
-                <input type="text" name="meeting_id" value="{{meeting['id']}}" hidden>
-                <input type="submit" value="Delete Meeting">
-            </form>
-        </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <h3>There are no meetings as of now, please add meetings</h3>
-    {% endif %}
-    <h3>Meeting Details</h3>
-    <form action="/add_meeting" method="POST">
-        <input type="text" name="class_name" placeholder="Enter the class name">
+    <div class="wrapper">
+        <header>Project Scion</header>
+        <form action="/add_meeting" method="POST">
+            <div class="inputField">
+                <input type="text" name="class_name" placeholder="Meeting Name" required>
+                <input type="datetime-local" name="class_time" placeholder="Time" required>
+                <br>
+            </div>
+            <div class="inputField">
+                <input type="text" name="class_link" placeholder="Meeting Link" required>
+                <button type="submit"><i class="fas fa-plus"></i></button>
+                <!-- <input type="submit" value=""> -->
+                <!-- <button type="submit" formaction="#"><i class="fas fa-plus"></i></button> -->
+            </div>
+        </form>
+        <div class="footer">
+            <span>Pending Meetings <span class="pendingTasks"></span></span>
+        </div>
         <br>
-        <input type="text" name="class_link" placeholder="Enter the class link">
+        <ul class="todoList">
+            {% for meeting in meeting_list %}
+            <li>
+                {% if meeting['started'] %} Currently going on: {% endif %} {{meeting['class_name']}}
+                <br> {{meeting['class_time']}}
+                <span>
+                    <form action="{{url_for('delete_meeting')}}" method="POST">
+                        <input type="text" name="meeting_id" value="{{meeting['id']}}" hidden>
+                        <button type="submit" class="icon">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% if finished_meetings %}
+        <div class="footer">
+            <span>Completed Meetings <span class="pendingTasks"></span></span>
+        </div>
         <br>
-        <input type="datetime-local" name="class_time" placeholder="Enter the time">
-        <br>
-        <input type="submit">
-    </form>
-    {% if finished_meetings %}
-    <h3>Finished Meetings</h3>
-    {% for meeting in finished_meetings %}
-    <li>
-        {{meeting['id']}}: {{meeting['class_name']}}, {{meeting['class_link']}}, {{meeting['class_time']}}
-    </li>
-    {% endfor %} {% endif %}
+        <ul class="todoList">
+            {% for meeting in finished_meetings %}
+            <li>
+                {% if meeting['started'] %} Currently going on: {% endif %} {{meeting['class_name']}}
+                <br> {{meeting['class_time']}}
+                <span>
+                    <form action="{{url_for('delete_meeting')}}" method="POST">
+                        <input type="text" name="meeting_id" value="{{meeting['id']}}" hidden>
+                        <button type="submit" class="icon">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+
+    <script src="{{ url_for('static', filename='main.js')}}"></script>
+
 </body>
 
 </html>
