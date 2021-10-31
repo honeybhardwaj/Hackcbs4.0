@@ -7,13 +7,14 @@ import time
 import os
 from selenium.webdriver.common.by import By
 
+
 class download:
-    def __init__(self, email, password,time,code,date):
+    def __init__(self, email, password, time, code, date):
         self.email = email
         self.password = password
-        self.time= time
-        self.code=code
-        self.date=date
+        self.time = time
+        self.code = code
+        self.date = date
         opt = Options()
         # opt.add_argument("--start-maximized")
         opt.add_experimental_option("prefs", {
@@ -21,7 +22,7 @@ class download:
             "profile.default_content_setting_values.media_stream_camera": 1,
             "profile.default_content_setting_values.geolocation": 1,
             "profile.default_content_setting_values.notifications": 1,
-            'download.default_directory' : os.getcwd()
+            'download.default_directory': os.getcwd()
         })
         opt.add_experimental_option('excludeSwitches', ['test-type'])
         try:
@@ -44,7 +45,7 @@ class download:
 
         # input Password
         self.driver.find_element(By.XPATH,
-            '//*[@id="password"]/div[1]/div/div[1]/input').send_keys(self.password)
+                                 '//*[@id="password"]/div[1]/div/div[1]/input').send_keys(self.password)
         self.driver.implicitly_wait(10)
         self.driver.find_element_by_id("passwordNext").click()
         self.driver.implicitly_wait(10)
@@ -53,20 +54,24 @@ class download:
         self.driver.get('https://google.com/')
         self.driver.implicitly_wait(100)
         time.sleep(2)
-    
+
     def downloadfile(self):
         print(f"In downloading files function.")
-        self.driver.get("https://mail.google.com/mail/u/1/#search/meet-recordings")
+        self.driver.get(
+            "https://mail.google.com/mail/u/1/#search/meet-recordings")
         time.sleep(2)
-        for i in range(1,15):
+        for i in range(1, 15):
             print(f"In downloading files function.")
-            text = self.driver.find_element(By.XPATH, '/html/body/div[7]/div[3]/div/div[2]/div[1]/div[2]/div/div/div/div/div[2]/div/div[1]/div/div[1]/div[5]/div[2]/div/table/tbody/tr[{}]/td[5]/div[1]/div/div[3]/span/span'.format(i)).text
+            text = self.driver.find_element(
+                By.XPATH, '/html/body/div[7]/div[3]/div/div[2]/div[1]/div[2]/div/div/div/div/div[2]/div/div[1]/div/div[1]/div[5]/div[2]/div/table/tbody/tr[{}]/td[5]/div[1]/div/div[3]/span/span'.format(i)).text
             checker = self.code+" ("+self.date+" at "+self.time+" GMT-7)"
             if(checker == text):
-                self.driver.find_element(By.XPATH,'/html/body/div[7]/div[3]/div/div[2]/div[1]/div[2]/div/div/div/div/div[2]/div/div[1]/div/div[1]/div[5]/div[2]/div/table/tbody/tr[{}]/td[5]/div[2]/div'.format(i)).click()
+                self.driver.find_element(
+                    By.XPATH, '/html/body/div[7]/div[3]/div/div[2]/div[1]/div[2]/div/div/div/div/div[2]/div/div[1]/div/div[1]/div[5]/div[2]/div/table/tbody/tr[{}]/td[5]/div[2]/div'.format(i)).click()
                 time.sleep(5)
                 self.driver.switch_to.window(self.driver.window_handles[1])
-                self.driver.find_element(By.XPATH,'/html/body/div[4]/div[4]/div/div[3]/div[2]/div[2]/div[3]/div').click()
+                self.driver.find_element(
+                    By.XPATH, '/html/body/div[4]/div[4]/div/div[3]/div[2]/div[2]/div[3]/div').click()
                 self.driver.close()
                 self.driver.switch_to.window(self.driver.window_handles[0])
                 print(f"Found the meet, breaking out")
@@ -74,11 +79,13 @@ class download:
         self.driver.close()
         time.sleep(10)
         self.driver.switch_to.window(self.driver.window_handles[0])
-        self.driver.close()               
+        self.driver.close()
+
 
 if __name__ == "__main__":
-    from app import User 
-    user = User.query.first() 
-    obj = download(user.email,user.password,"00:43","mwx-wbnz-bnp","2021-10-31")
+    from app import User
+    user = User.query.first()
+    obj = download(user.email, user.password, "00:43",
+                   "mwx-wbnz-bnp", "2021-10-31")
     obj.google_login()
     obj.downloadfile()

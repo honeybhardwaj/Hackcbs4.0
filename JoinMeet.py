@@ -25,11 +25,11 @@ class JoinMeet:
         try:
             s = Service(ChromeDriverManager().install())
             self.driver = webdriver.Chrome(service=s, options=opt)
-            
+
         except:
             s = Service(ChromeDriverManager().install())
             self.driver = webdriver.Chrome(service=s, options=opt)
-        self.messages = SendMessage()    
+        self.messages = SendMessage()
 
     def google_login(self):
         # self.messages.send_message("Initating the process.")
@@ -44,7 +44,7 @@ class JoinMeet:
 
         # input Password
         self.driver.find_element(By.XPATH,
-            '//*[@id="password"]/div[1]/div/div[1]/input').send_keys(self.password)
+                                 '//*[@id="password"]/div[1]/div/div[1]/input').send_keys(self.password)
         self.driver.implicitly_wait(10)
         self.driver.find_element_by_id("passwordNext").click()
         self.driver.implicitly_wait(10)
@@ -59,14 +59,14 @@ class JoinMeet:
         time.sleep(2)
         # turn off mic
         self.driver.find_element(By.XPATH,
-            '/html/body/div/c-wiz/div/div/div[9]/div[3]/div/div/div[3]/div/div/div[1]/div[1]/div/div[4]/div[1]/div/div/div').click()
+                                 '/html/body/div/c-wiz/div/div/div[9]/div[3]/div/div/div[3]/div/div/div[1]/div[1]/div/div[4]/div[1]/div/div/div').click()
         self.driver.implicitly_wait(3000)
 
         # turn off camera
         time.sleep(2)
         print("Turning the camera off")
         self.driver.find_element(By.XPATH,
-            '/html/body/div/c-wiz/div/div/div[9]/div[3]/div/div/div[3]/div/div/div[1]/div[1]/div/div[4]/div[2]/div/div').click()
+                                 '/html/body/div/c-wiz/div/div/div[9]/div[3]/div/div/div[3]/div/div/div[1]/div[1]/div/div[4]/div[2]/div/div').click()
         self.driver.implicitly_wait(3000)
 
     def ask_to_join(self):
@@ -82,14 +82,15 @@ class JoinMeet:
 
     def join_meet(self, meeting_link, class_id):
         self.class_id = class_id
-        self.messages.send_message(f"Hi, I would like to inform you that your meeting scheduled right now on the link {meeting_link}, has been joined.")
+        self.messages.send_message(
+            f"Hi, I would like to inform you that your meeting scheduled right now on the link {meeting_link}, has been joined.")
         print(f"Joining the meet link: {meeting_link}")
         # login to google account
         self.google_login()
         self.driver.get(meeting_link)
         self.turn_off_mic()
         attendees = self.driver.find_element(By.XPATH,
-            '/html/body/div[1]/c-wiz/div/div/div[9]/div[3]/div/div/div[3]/div/div/div[2]/div/div[1]/div[1]/div[2]/div[2]')
+                                             '/html/body/div[1]/c-wiz/div/div/div[9]/div[3]/div/div/div[3]/div/div/div[2]/div/div[1]/div[1]/div[2]/div[2]')
         print(attendees.text)
         self.ask_to_join()
 
@@ -104,8 +105,9 @@ class JoinMeet:
         self.turn_off_mic()
         self.ask_to_join()
         self.driver.find_element(By.XPATH,
-            '/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[5]/div/div[2]/div[1]/span/button/i').click()
-        self.driver.find_element(By.XPATH,'/html/body/div[3]/ul/li[3]').click()
+                                 '/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[5]/div/div[2]/div[1]/span/button/i').click()
+        self.driver.find_element(
+            By.XPATH, '/html/body/div[3]/ul/li[3]').click()
         time.sleep(2)
         keyboard = Controller()
         keyboard.press(Key.tab)
@@ -122,22 +124,23 @@ class JoinMeet:
 
         time.sleep(5)
         self.driver.find_element(By.XPATH,
-            '/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[6]/div/div[3]/div[1]/span/button/i').click()
+                                 '/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[6]/div/div[3]/div[1]/span/button/i').click()
         time.sleep(2)
         self.driver.find_element(By.XPATH,
-            '/html/body/div[4]/ul/li[2]/span[3]').click()
+                                 '/html/body/div[4]/ul/li[2]/span[3]').click()
         time.sleep(2)
         self.driver.find_element(By.XPATH,
-            '/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[4]/div[2]/div[3]/div/div[2]/div/div/p/div/div/button').click()
+                                 '/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[4]/div[2]/div[3]/div/div[2]/div/div/p/div/div/button').click()
         time.sleep(2)
         self.driver.find_element(By.XPATH,
-            '/html/body/div[1]/div[3]/div/div[2]/div[3]/div/div[2]/span/span').click()
+                                 '/html/body/div[1]/div[3]/div/div[2]/div[3]/div/div[2]/span/span').click()
         from app import Meeting, db
         from datetime import timedelta, datetime
         meet = Meeting.query.filter_by(id=self.class_id).first()
         meet.recording_time = datetime.now() - timedelta(hours=12, minutes=30)
         db.session.commit()
-        self.messages.send_message(f"Hi, I would like to inform you that the recording has been started. {str(meet.recording_time)}")
+        self.messages.send_message(
+            f"Hi, I would like to inform you that the recording has been started. {str(meet.recording_time)}")
         self.leave_meeting()
 
     def leave_meeting(self, wait_for=10, members=3):
@@ -150,35 +153,38 @@ class JoinMeet:
             time.sleep(wait_for)
             # chek members
             attendees = self.driver.find_element_by_css_selector('div.uGOf1d')
-            print("Number of attendees are :", attendees.get_attribute("innerHTML"))
+            print("Number of attendees are :",
+                  attendees.get_attribute("innerHTML"))
             attendees = int(attendees.get_attribute("innerHTML"))
             if attendees < members:
                 print("Leaving the meeting.")
-                self.messages.send_message("Hi, I would like to inform you that I am leaving the meeting since the number of attendees are less than the threshold.")
+                self.messages.send_message(
+                    "Hi, I would like to inform you that I am leaving the meeting since the number of attendees are less than the threshold.")
                 self.driver.find_element(By.XPATH,
-                    "/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[7]/span/button/i").click()
+                                         "/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[7]/span/button/i").click()
                 time.sleep(2)
                 self.driver.switch_to.window(self.driver.window_handles[1])
                 print("Stopping the recording")
-                self.messages.send_message("Hi, I would like to inform you that the recording has been stopped.")
+                self.messages.send_message(
+                    "Hi, I would like to inform you that the recording has been stopped.")
                 self.driver.find_element(By.XPATH,
-                    '/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[6]/div/div[3]/div[1]/span/button/i').click()
+                                         '/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[6]/div/div[3]/div[1]/span/button/i').click()
                 time.sleep(2)
                 self.driver.find_element(By.XPATH,
-                    '/html/body/div[4]/ul/li[2]/span[3]').click()
+                                         '/html/body/div[4]/ul/li[2]/span[3]').click()
                 time.sleep(2)
                 self.driver.find_element(By.XPATH,
-                    '/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[4]/div[2]/div[3]/div/div[2]/div/div/p/div/div/button').click()
+                                         '/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[4]/div[2]/div[3]/div/div[2]/div/div/p/div/div/button').click()
                 time.sleep(2)
                 self.driver.find_element(By.XPATH,
-                    '/html/body/div[1]/div[3]/div/div[2]/div[3]/div/div[2]/span/span').click()
+                                         '/html/body/div[1]/div[3]/div/div[2]/div[3]/div/div[2]/span/span').click()
                 self.driver.find_element(By.XPATH,
-                    "/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[7]/span/button/i").click()
+                                         "/html/body/div[1]/c-wiz/div[1]/div/div[9]/div[3]/div[10]/div[2]/div/div[7]/span/button/i").click()
                 for handle in self.driver.window_handles:
                     self.driver.switch_to.window(handle)
                     self.driver.close()
                 from app import Meeting, db
                 meet = Meeting.query.filter_by(id=self.class_id).first()
-                meet.finished = True 
+                meet.finished = True
                 db.session.commit()
                 break

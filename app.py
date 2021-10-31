@@ -122,27 +122,6 @@ def delete_meeting():
     return redirect(url_for("home"))
 
 
-@app.route('/transcribe')
-def transcribe():
-
-    videos = TranscribedVideo.query.all()
-
-    video_list = []
-    for video in videos:
-        data = ""
-        with open(video.file_name.replace("mp4", "txt")) as f:
-            data = f.read()
-        video_list.append(
-            {
-                'video_name': video.name,
-                'video_file_name': video.file_name.replace("mp4", "txt"),
-                'video_file_text': data
-            }
-        )
-
-    return render_template("transcribe.html", video_list=video_list, PROCESSING=PROCESSING)
-
-
 @app.route('/transcribe_video', methods=["POST"])
 def transcribe_video():
     def process_video(name, video_file_name):
@@ -161,16 +140,18 @@ def transcribe_video():
         PROCESSING.pop()
         os.remove(video_file_name)
         return
-    
+
     meeting_id = request.form.get('meeting_id')
     meet = Meeting.query.filter_by(id=meeting_id).first()
-    name = meet.class_name 
+    name = meet.class_name
     recording_time = meet.recording_time
     user = User.query.first()
-    obj = download(user.email, user.password, meet.recording_time.strftime("%H:%M"), "mwx-wbnz-bnp", meet.recording_time.strftime("%Y-%m-%d"))
+    obj = download(user.email, user.password, meet.recording_time.strftime(
+        "%H:%M"), "mwx-wbnz-bnp", meet.recording_time.strftime("%Y-%m-%d"))
     obj.google_login()
     obj.downloadfile()
-    filename = meet.recording_time.strftime("mwx-wbnz-bnp (%Y-%m-%d at %H_%M GMT-7).mp4")
+    filename = meet.recording_time.strftime(
+        "mwx-wbnz-bnp (%Y-%m-%d at %H_%M GMT-7).mp4")
     db.session.delete(meet)
     db.session.commit()
     thread = Thread(target=process_video, kwargs={
@@ -178,17 +159,19 @@ def transcribe_video():
     thread.start()
     return redirect(url_for('home'))
 
+
 @app.route('/view_file/<filename>')
 def view_file(filename):
     with open(filename) as f:
         return f.read()
 
+
 if __name__ == "__main__":
     from StoreCred import store_password
     store_password()
     db.create_all()
-    # scheduler.add_job(id="check_time", func=checker,
-    #                   trigger="interval", seconds=5)
-    # scheduler.start()
-    port = 5045+1+1+1+1+1+1+1+1+1+1
-    app.run(debug=True, port=port, use_reloader=True)
+    scheduler.add_job(id="check_time", func=checker,
+                      trigger="interval", seconds=5)
+    scheduler.start()
+    port = 5087
+    app.run(debug=True, port=port, use_reloader=False)

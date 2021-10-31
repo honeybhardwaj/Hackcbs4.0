@@ -1,6 +1,6 @@
-# importing libraries 
-import speech_recognition as sr 
-import os 
+# importing libraries
+import speech_recognition as sr
+import os
 from pydub import AudioSegment
 from pydub.silence import split_on_silence
 import moviepy.editor as mp
@@ -13,25 +13,25 @@ r = sr.Recognizer()
 # and applies speech recognition
 def get_large_audio_transcription(path):
     # open the audio file using pydub
-    
-    folder_name = path.replace("wav","")
-    
-    sound = AudioSegment.from_wav(path)  
+
+    folder_name = path.replace("wav", "")
+
+    sound = AudioSegment.from_wav(path)
     # split audio sound where silence is 700 miliseconds or more and get chunks
     chunks = split_on_silence(sound,
-        # experiment with this value for your target audio file
-        min_silence_len = 500,
-        # adjust this per requirement
-        silence_thresh = sound.dBFS-15,
-        # keep the silence for 1 second, adjustable as well
-        keep_silence=500,
-    )
-    
+                              # experiment with this value for your target audio file
+                              min_silence_len=500,
+                              # adjust this per requirement
+                              silence_thresh=sound.dBFS-15,
+                              # keep the silence for 1 second, adjustable as well
+                              keep_silence=500,
+                              )
+
     # create a directory to store the audio chunks
     if not os.path.isdir(folder_name):
         os.mkdir(folder_name)
     whole_text = ""
-    # process each chunk 
+    # process each chunk
     for i, audio_chunk in enumerate(chunks, start=1):
         # export audio chunk and save it in
         # the `folder_name` directory.
@@ -57,8 +57,8 @@ def get_large_audio_transcription(path):
 
 
 def Transcribe(filename):
-    clip = mp.VideoFileClip(filename) 
-    videoname = filename.replace("mp4","wav")
+    clip = mp.VideoFileClip(filename)
+    videoname = filename.replace("mp4", "wav")
     clip.audio.write_audiofile(videoname)
     path = videoname
     return get_large_audio_transcription(path)
